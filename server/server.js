@@ -19,13 +19,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json()) 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route registration
-app.use('/api/users', userRoutes);
-app.use('/api/exercises', exercisesRouter);
-app.use('/api/templates', templatesRouter);
-app.use('/api/workouts', workoutsRouter);
-app.use('/api/prs', prsRouter);
-
 const uri = `mongodb+srv://${config.database.user}:${config.database.password}@firstcluster.tcooogm.mongodb.net/${config.database.dbName}?retryWrites=true&w=majority&appName=FirstCluster`;
 
 const clientOptions = {
