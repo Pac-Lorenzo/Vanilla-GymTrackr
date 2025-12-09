@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Route Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">User Route Testing</h1>
+        
+        <!-- Create User -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Create User</h2>
+            <form id="createForm" class="grid grid-cols-2 gap-4">
+                <input type="text" id="name" placeholder="Name" required
+                       class="border rounded px-3 py-2">
+                <input type="email" id="email" placeholder="Email" required
+                       class="border rounded px-3 py-2">
+                <input type="number" id="age" placeholder="Age" 
+                       class="border rounded px-3 py-2">
+                <input type="number" id="weight_lbs" placeholder="Weight (lbs)" 
+                       class="border rounded px-3 py-2">
+                <button type="submit" class="col-span-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Create User
+                </button>
+            </form>
+        </div>
+
+        <!-- Get All Users -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">All Users</h2>
+                <button onclick="getAllUsers()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Refresh List
+                </button>
+            </div>
+            <div id="usersList" class="space-y-2">
+                <p class="text-gray-500">Click "Refresh List" to load users</p>
+            </div>
+        </div>
+
+        <!-- Get/Update User by ID -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Get/Update User by ID</h2>
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="userId" placeholder="User ID" 
+                       class="border rounded px-3 py-2 flex-1">
+                <button onclick="getUserById()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Get User
+                </button>
+            </div>
+            
+            <div id="userDetails" class="hidden">
+                <form id="updateForm" class="grid grid-cols-2 gap-4">
+                    <input type="text" id="updateName" placeholder="Name"
+                           class="border rounded px-3 py-2">
+                    <input type="email" id="updateEmail" placeholder="Email"
+                           class="border rounded px-3 py-2">
+                    <input type="number" id="updateAge" placeholder="Age"
+                           class="border rounded px-3 py-2">
+                    <input type="number" id="updateWeight" placeholder="Weight (lbs)"
+                           class="border rounded px-3 py-2">
+                    <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                        Update User
+                    </button>
+                    <button type="button" onclick="deleteUser()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Response Display -->
+        <div class="bg-gray-800 text-white rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-2">API Response:</h3>
+            <pre id="response" class="text-sm overflow-x-auto">Response will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api/users';
+        let currentUserId = null;
+
+        // Display response
+        function showResponse(data) {
+            document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Create User
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                age: parseInt(document.getElementById('age').value) || undefined,
+                weight_lbs: parseInt(document.getElementById('weight_lbs').value) || undefined
+            };
+
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+                const data = await response.json();
+                showResponse(data);
+                if (response.ok) {
+                    alert('User created! ID: ' + data._id);
+                    e.target.reset();
+                    getAllUsers();
+                }
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        });
+
+        // Get All Users
+        async function getAllUsers() {
+            try {
+                const response = await fetch(API_BASE);
+                const data = await response.json();
+                showResponse(data);
+                
+                const list = document.getElementById('usersList');
+                if (data.length === 0) {
+                    list.innerHTML = '<p class="text-gray-500">No users found</p>';
+                } else {
+                    list.innerHTML = data.map(user => `
+                        <div class="border rounded p-3 flex justify-between items-center">
+                            <div>
+                                <strong>${user.name}</strong> - ${user.email}
+                                <br><small class="text-gray-600">ID: ${user._id}</small>
+                            </div>
+                            <button onclick="document.getElementById('userId').value='${user._id}'; getUserById()" 
+                                    class="text-blue-500 hover:text-blue-700">
+                                Select →
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        }
+
+        // Get User by ID
+        async function getUserById() {
+            const id = document.getElementById('userId').value;
+            if (!id) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/${id}`);
+                const data = await response.json();
+                showResponse(data);
+                
+                if (response.ok) {
+                    currentUserId = id;
+                    document.getElementById('userDetails').classList.remove('hidden');
+                    document.getElementById('updateName').value = data.name || '';
+                    document.getElementById('updateEmail').value = data.email || '';
+                    document.getElementById('updateAge').value = data.age || '';
+                    document.getElementById('updateWeight').value = data.weight_lbs || '';
+                } else {
+                    document.getElementById('userDetails').classList.add('hidden');
+                }
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        }
+
+        // Update User
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserId) return;
+
+            const updateData = {};
+            const name = document.getElementById('updateName').value;
+            const email = document.getElementById('updateEmail').value;
+            const age = document.getElementById('updateAge').value;
+            const weight = document.getElementById('updateWeight').value;
+
+            if (name) updateData.name = name;
+            if (email) updateData.email = email;
+            if (age) updateData.age = parseInt(age);
+            if (weight) updateData.weight_lbs = parseInt(weight);
+
+            try {
+                const response = await fetch(`${API_BASE}/${currentUserId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                const data = await response.json();
+                showResponse(data);
+                if (response.ok) {
+                    alert('User updated!');
+                    getAllUsers();
+                }
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        });
+
+        // Delete User
+        async function deleteUser() {
+            if (!currentUserId) return;
+            if (!confirm('Are you sure you want to delete this user?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/${currentUserId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                showResponse(data);
+                if (response.ok) {
+                    alert('User deleted!');
+                    document.getElementById('userDetails').classList.add('hidden');
+                    document.getElementById('userId').value = '';
+                    currentUserId = null;
+                    getAllUsers();
+                }
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        }
+    </script>
+</body>
+</html>

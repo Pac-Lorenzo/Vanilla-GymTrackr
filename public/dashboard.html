@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar will be inserted here by JavaScript -->
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h1 class="text-2xl font-bold mb-2">Welcome back, <span id="userName"></span>!</h1>
+            <p class="text-gray-600">Ready for today's workout?</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-gray-500 text-sm">Current Weight</h3>
+                <p class="text-2xl font-bold"><span id="userWeight">--</span> lbs</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-gray-500 text-sm">Age</h3>
+                <p class="text-2xl font-bold" id="userAge">--</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-gray-500 text-sm">Total Workouts</h3>
+                <p class="text-2xl font-bold" id="totalWorkouts">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-gray-500 text-sm">This Week</h3>
+                <p class="text-2xl font-bold" id="weekWorkouts">0</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+                <div class="space-y-3">
+                    <button onclick="window.location.href='/workout.html'" 
+                            class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+                        🏋️ Start New Workout
+                    </button>
+                    <button onclick="window.location.href='/exercises.html'" 
+                            class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
+                        ➕ Manage Exercises
+                    </button>
+                    <button onclick="window.location.href='/profile.html'" 
+                            class="w-full bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600">
+                        👤 Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Workouts -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Recent Workouts</h2>
+                <div id="recentWorkouts" class="space-y-2">
+                    <p class="text-gray-500">No workouts yet. Start your first workout!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/session.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        // Check if logged in
+        if (!Session.requireLogin()) {
+            // Will redirect if not logged in
+        } else {
+            // Render navbar
+            renderNavbar();
+            
+            // Load dashboard data
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const user = Session.getCurrentUser();
+            
+            // Display user info
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userWeight').textContent = user.weight_lbs || '--';
+            document.getElementById('userAge').textContent = user.age || '--';
+            
+            // Load workout stats (when workouts are implemented)
+            try {
+                // For now, just showing placeholder
+                // const workouts = await WorkoutAPI.getByUser(user._id);
+                // displayWorkoutStats(workouts);
+            } catch (error) {
+                console.error('Error loading workouts:', error);
+            }
+        }
+    </script>
+</body>
+</html>
