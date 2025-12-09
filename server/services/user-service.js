@@ -13,7 +13,7 @@ async function getUserById(id) {
 }
 
 async function updateUser(id, fields) {
-  const allowed = ['name', 'email', 'age', 'weight_lbs'];
+  const allowed = ['name', 'email'];
   const updateData = {};
   for (const key of allowed) {
     if (fields[key] !== undefined) {

@@ -75,9 +75,7 @@ async function seed() {
 
     const user = await User.create({
       name: 'Paco Lorenzo',
-      email: 'paco@example.com',
-      age: 20,
-      weight_lbs: 170
+      email: 'paco@example.com'
     });
 
     const workout = await Workout.create({

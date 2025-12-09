@@ -13,22 +13,10 @@
             <p class="text-gray-600">Ready for today's workout?</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-gray-500 text-sm">Current Weight</h3>
-                <p class="text-2xl font-bold"><span id="userWeight">--</span> lbs</p>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-gray-500 text-sm">Age</h3>
-                <p class="text-2xl font-bold" id="userAge">--</p>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
             <div class="bg-white rounded-lg shadow p-4">
                 <h3 class="text-gray-500 text-sm">Total Workouts</h3>
                 <p class="text-2xl font-bold" id="totalWorkouts">0</p>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-gray-500 text-sm">This Week</h3>
-                <p class="text-2xl font-bold" id="weekWorkouts">0</p>
             </div>
         </div>
 
@@ -72,8 +60,6 @@
             const user = Session.getCurrentUser();
             
             document.getElementById('userName').textContent = user.name;
-            document.getElementById('userWeight').textContent = user.weight_lbs || '--';
-            document.getElementById('userAge').textContent = user.age || '--';
             
             try {
                 const workouts = await API.workouts.listForUser(user._id);
@@ -85,13 +71,7 @@
         }
 
         function updateWorkoutStats(workouts) {
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-
             document.getElementById('totalWorkouts').textContent = workouts.length;
-            document.getElementById('weekWorkouts').textContent = workouts.filter(w => {
-                return new Date(w.date) >= weekAgo;
-            }).length;
         }
 
         function displayRecentWorkouts(workouts) {

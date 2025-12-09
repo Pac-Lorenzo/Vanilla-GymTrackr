@@ -17,10 +17,6 @@
                        class="border rounded px-3 py-2">
                 <input type="email" id="email" placeholder="Email" required
                        class="border rounded px-3 py-2">
-                <input type="number" id="age" placeholder="Age" 
-                       class="border rounded px-3 py-2">
-                <input type="number" id="weight_lbs" placeholder="Weight (lbs)" 
-                       class="border rounded px-3 py-2">
                 <button type="submit" class="col-span-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Create User
                 </button>
@@ -55,13 +51,9 @@
                            class="border rounded px-3 py-2">
                     <input type="email" id="updateEmail" placeholder="Email"
                            class="border rounded px-3 py-2">
-                    <input type="number" id="updateAge" placeholder="Age"
-                           class="border rounded px-3 py-2">
-                    <input type="number" id="updateWeight" placeholder="Weight (lbs)"
-                           class="border rounded px-3 py-2">
-                    <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                        Update User
-                    </button>
+                <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                    Update User
+                </button>
                     <button type="button" onclick="deleteUser()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                         Delete User
                     </button>
@@ -88,8 +80,6 @@
             const userData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                age: parseInt(document.getElementById('age').value) || undefined,
-                weight_lbs: parseInt(document.getElementById('weight_lbs').value) || undefined
             };
 
             try {
@@ -155,8 +145,6 @@
                     document.getElementById('userDetails').classList.remove('hidden');
                     document.getElementById('updateName').value = data.name || '';
                     document.getElementById('updateEmail').value = data.email || '';
-                    document.getElementById('updateAge').value = data.age || '';
-                    document.getElementById('updateWeight').value = data.weight_lbs || '';
                 } else {
                     document.getElementById('userDetails').classList.add('hidden');
                 }
@@ -172,13 +160,9 @@
             const updateData = {};
             const name = document.getElementById('updateName').value;
             const email = document.getElementById('updateEmail').value;
-            const age = document.getElementById('updateAge').value;
-            const weight = document.getElementById('updateWeight').value;
 
             if (name) updateData.name = name;
             if (email) updateData.email = email;
-            if (age) updateData.age = parseInt(age);
-            if (weight) updateData.weight_lbs = parseInt(weight);
 
             try {
                 const response = await fetch(`${API_BASE}/${currentUserId}`, {
