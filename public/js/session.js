@@ -47,7 +47,6 @@ function renderNavbar() {
               <a href="/workout.html" class="text-gray-700 hover:text-blue-500">Workout</a>
               <a href="/exercises.html" class="text-gray-700 hover:text-blue-500">Exercises</a>
               <a href="/history.html" class="text-gray-700 hover:text-blue-500">History</a>
-              <a href="/stats.html" class="text-gray-700 hover:text-blue-500">Stats</a>
             </div>
           </div>
           <div class="flex items-center space-x-4">

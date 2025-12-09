@@ -9,7 +9,6 @@ const port = config.port
 const userService = require('./services/user-service');
 const exerciseService = require('./services/exercise-service');
 const workoutService = require('./services/workout-service');
-const prService = require('./services/pr-service');
 
 const app = express();
 
@@ -137,7 +136,7 @@ app.delete('/api/exercises/:id', async (req, res, next) => {
 
 
 // Workout Routes
-// POST create workout + update PRs
+// POST create workout
 app.post('/api/workouts', async (req, res, next) => {
   try {
     const workout = await workoutService.createWorkout(req.body);
@@ -174,32 +173,6 @@ app.delete('/api/workouts/byid/:id', async (req, res, next) => {
     const workout = await workoutService.deleteWorkoutById(req.params.id);
     if (!workout) return res.status(404).json({ error: 'Workout not found' });
     res.json({ message: 'Workout deleted successfully', workout });
-  } catch (err) {
-    next(err);
-  }
-});
-
-
-// PR Routes
-// GET all PRs for a user
-app.get('/api/prs/:userId', async (req, res, next) => {
-  try {
-    const prs = await prService.getPrsForUser(req.params.userId);
-    res.json(prs);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET PR for one exercise
-app.get('/api/prs/:userId/:exerciseId', async (req, res, next) => {
-  try {
-    const pr = await prService.getPrForUserExercise(
-      req.params.userId,
-      req.params.exerciseId
-    );
-    if (!pr) return res.status(404).json({ error: 'PR not found' });
-    res.json(pr);
   } catch (err) {
     next(err);
   }

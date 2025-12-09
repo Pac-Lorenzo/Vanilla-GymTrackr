@@ -4,7 +4,6 @@ const config = require('./config');
 const User = require('./models/User');
 const Exercise = require('./models/Exercise');
 const Workout = require('./models/Workout');
-const PR = require('./models/PersonalRecord');
 
 const uri = `mongodb+srv://${config.database.user}:${config.database.password}` +
   `@firstcluster.tcooogm.mongodb.net/${config.database.dbName}`;
@@ -16,7 +15,6 @@ async function seed() {
     await Exercise.deleteMany({});
     await User.deleteMany({});
     await Workout.deleteMany({});
-    await PR.deleteMany({});
 
     const exercises = [
       // Chest
@@ -96,13 +94,6 @@ async function seed() {
           ]
         }
       ]
-    });
-
-    await PR.create({
-      user_id: user._id,
-      exercise_id: bench.exercise_id,
-      best_weight: 185,
-      date_set: workout.date
     });
 
     console.log('User ID:', user._id.toString());

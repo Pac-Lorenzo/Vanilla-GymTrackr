@@ -37,11 +37,6 @@
       addGlobal: (data) => request("/exercises", "POST", data),
       removeGlobal: (id) => request(`/exercises/${id}`, "DELETE"),
     },
-    prs: {
-      listForUser: (userId) => request(`/prs/${userId}`),
-      getForExercise: (userId, exerciseId) =>
-        request(`/prs/${userId}/${exerciseId}`),
-    },
   };
 
   window.API = api;
