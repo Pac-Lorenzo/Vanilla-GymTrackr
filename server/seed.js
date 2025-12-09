@@ -17,44 +17,44 @@ async function seed() {
     await Workout.deleteMany({});
 
     const exercises = [
-      { exercise_id: 'ex001', name: 'Bench Press', type: 'Strength', muscle_groups: ['Chest', 'Triceps', 'Shoulders'] },
-      { exercise_id: 'ex002', name: 'Incline Bench Press', type: 'Strength', muscle_groups: ['Upper Chest', 'Triceps', 'Shoulders'] },
-      { exercise_id: 'ex003', name: 'Dumbbell Flyes', type: 'Strength', muscle_groups: ['Chest', 'Shoulders'] },
-      { exercise_id: 'ex004', name: 'Push-ups', type: 'Strength', muscle_groups: ['Chest', 'Triceps', 'Shoulders', 'Core'] },
-      { exercise_id: 'ex005', name: 'Cable Crossover', type: 'Strength', muscle_groups: ['Chest', 'Shoulders'] },
+      { exercise_id: 'ex001', name: 'Bench Press', type: 'Strength' },
+      { exercise_id: 'ex002', name: 'Incline Bench Press', type: 'Strength' },
+      { exercise_id: 'ex003', name: 'Dumbbell Flyes', type: 'Strength' },
+      { exercise_id: 'ex004', name: 'Push-ups', type: 'Strength' },
+      { exercise_id: 'ex005', name: 'Cable Crossover', type: 'Strength' },
 
-      { exercise_id: 'ex006', name: 'Deadlift', type: 'Strength', muscle_groups: ['Back', 'Hamstrings', 'Glutes', 'Core'] },
-      { exercise_id: 'ex007', name: 'Pull-ups', type: 'Strength', muscle_groups: ['Back', 'Biceps', 'Shoulders'] },
-      { exercise_id: 'ex008', name: 'Barbell Row', type: 'Strength', muscle_groups: ['Back', 'Biceps', 'Core'] },
-      { exercise_id: 'ex009', name: 'Lat Pulldown', type: 'Strength', muscle_groups: ['Back', 'Biceps'] },
-      { exercise_id: 'ex010', name: 'T-Bar Row', type: 'Strength', muscle_groups: ['Back', 'Biceps', 'Core'] },
-      { exercise_id: 'ex011', name: 'Cable Row', type: 'Strength', muscle_groups: ['Back', 'Biceps'] },
+      { exercise_id: 'ex006', name: 'Deadlift', type: 'Strength' },
+      { exercise_id: 'ex007', name: 'Pull-ups', type: 'Strength' },
+      { exercise_id: 'ex008', name: 'Barbell Row', type: 'Strength' },
+      { exercise_id: 'ex009', name: 'Lat Pulldown', type: 'Strength' },
+      { exercise_id: 'ex010', name: 'T-Bar Row', type: 'Strength' },
+      { exercise_id: 'ex011', name: 'Cable Row', type: 'Strength' },
 
-      { exercise_id: 'ex012', name: 'Overhead Press', type: 'Strength', muscle_groups: ['Shoulders', 'Triceps', 'Core'] },
-      { exercise_id: 'ex013', name: 'Lateral Raises', type: 'Strength', muscle_groups: ['Shoulders'] },
-      { exercise_id: 'ex014', name: 'Front Raises', type: 'Strength', muscle_groups: ['Shoulders', 'Core'] },
-      { exercise_id: 'ex015', name: 'Rear Delt Flyes', type: 'Strength', muscle_groups: ['Shoulders', 'Back'] },
+      { exercise_id: 'ex012', name: 'Overhead Press', type: 'Strength' },
+      { exercise_id: 'ex013', name: 'Lateral Raises', type: 'Strength' },
+      { exercise_id: 'ex014', name: 'Front Raises', type: 'Strength' },
+      { exercise_id: 'ex015', name: 'Rear Delt Flyes', type: 'Strength' },
 
-      { exercise_id: 'ex016', name: 'Bicep Curls', type: 'Strength', muscle_groups: ['Biceps'] },
-      { exercise_id: 'ex017', name: 'Tricep Dips', type: 'Strength', muscle_groups: ['Triceps', 'Shoulders', 'Chest'] },
-      { exercise_id: 'ex018', name: 'Tricep Pushdown', type: 'Strength', muscle_groups: ['Triceps'] },
-      { exercise_id: 'ex019', name: 'Hammer Curls', type: 'Strength', muscle_groups: ['Biceps', 'Forearms'] },
+      { exercise_id: 'ex016', name: 'Bicep Curls', type: 'Strength' },
+      { exercise_id: 'ex017', name: 'Tricep Dips', type: 'Strength' },
+      { exercise_id: 'ex018', name: 'Tricep Pushdown', type: 'Strength' },
+      { exercise_id: 'ex019', name: 'Hammer Curls', type: 'Strength' },
 
-      { exercise_id: 'ex020', name: 'Squat', type: 'Strength', muscle_groups: ['Quads', 'Glutes', 'Core'] },
-      { exercise_id: 'ex021', name: 'Leg Press', type: 'Strength', muscle_groups: ['Quads', 'Glutes', 'Hamstrings'] },
-      { exercise_id: 'ex022', name: 'Romanian Deadlift', type: 'Strength', muscle_groups: ['Hamstrings', 'Glutes', 'Back'] },
-      { exercise_id: 'ex023', name: 'Lunges', type: 'Strength', muscle_groups: ['Quads', 'Glutes', 'Hamstrings', 'Core'] },
-      { exercise_id: 'ex024', name: 'Leg Curls', type: 'Strength', muscle_groups: ['Hamstrings'] },
-      { exercise_id: 'ex025', name: 'Leg Extensions', type: 'Strength', muscle_groups: ['Quads'] },
-      { exercise_id: 'ex026', name: 'Calf Raises', type: 'Strength', muscle_groups: ['Calves'] },
-      { exercise_id: 'ex027', name: 'Bulgarian Split Squat', type: 'Strength', muscle_groups: ['Quads', 'Glutes', 'Core'] },
+      { exercise_id: 'ex020', name: 'Squat', type: 'Strength' },
+      { exercise_id: 'ex021', name: 'Leg Press', type: 'Strength' },
+      { exercise_id: 'ex022', name: 'Romanian Deadlift', type: 'Strength' },
+      { exercise_id: 'ex023', name: 'Lunges', type: 'Strength' },
+      { exercise_id: 'ex024', name: 'Leg Curls', type: 'Strength' },
+      { exercise_id: 'ex025', name: 'Leg Extensions', type: 'Strength' },
+      { exercise_id: 'ex026', name: 'Calf Raises', type: 'Strength' },
+      { exercise_id: 'ex027', name: 'Bulgarian Split Squat', type: 'Strength' },
 
-      { exercise_id: 'ex028', name: 'Plank', type: 'Strength', muscle_groups: ['Core', 'Shoulders'] },
-      { exercise_id: 'ex029', name: 'Russian Twists', type: 'Strength', muscle_groups: ['Core', 'Obliques'] },
-      { exercise_id: 'ex030', name: 'Crunches', type: 'Strength', muscle_groups: ['Core'] },
+      { exercise_id: 'ex028', name: 'Plank', type: 'Strength' },
+      { exercise_id: 'ex029', name: 'Russian Twists', type: 'Strength' },
+      { exercise_id: 'ex030', name: 'Crunches', type: 'Strength' },
 
-      { exercise_id: 'ex031', name: 'Running', type: 'Cardio', muscle_groups: ['Legs', 'Cardiovascular'] },
-      { exercise_id: 'ex032', name: 'Cycling', type: 'Cardio', muscle_groups: ['Quads', 'Glutes', 'Cardiovascular'] }
+      { exercise_id: 'ex031', name: 'Running', type: 'Cardio' },
+      { exercise_id: 'ex032', name: 'Cycling', type: 'Cardio' }
     ];
 
     const createdExercises = {};
