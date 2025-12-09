@@ -17,7 +17,8 @@ const app = express();
 app.use(cors()); 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json()) 
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static frontend from the project-level public folder
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const uri = `mongodb+srv://${config.database.user}:${config.database.password}@firstcluster.tcooogm.mongodb.net/${config.database.dbName}?retryWrites=true&w=majority&appName=FirstCluster`;
 

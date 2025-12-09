@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <h1 class="text-2xl font-bold" id="pageTitle">New Workout</h1>
+
+    <section class="bg-white rounded shadow p-4 space-y-3" id="builderSection">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <select id="exerciseSelect" class="border rounded px-3 py-2" aria-label="Exercise"></select>
+        <input id="weightInput" type="number" min="0" step="1" placeholder="Weight" class="border rounded px-3 py-2">
+        <input id="repsInput" type="number" min="1" step="1" placeholder="Reps" class="border rounded px-3 py-2">
+      </div>
+      <button id="addSetBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Set</button>
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <h2 class="text-lg font-semibold mb-2">Exercises</h2>
+      <div id="exerciseList" class="space-y-2 text-sm text-gray-800">No sets added yet.</div>
+    </section>
+
+    <button id="saveWorkoutBtn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save Workout</button>
+  </main>
+
+  <script src="/js/session.js"></script>
+  <script src="/js/api.js"></script>
+  <script>
+    let currentExercises = [];
+    let library = [];
+    let viewingExisting = false;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!Session.requireLogin()) return;
+      renderNavbar();
+
+      const params = new URLSearchParams(window.location.search);
+      const workoutId = params.get('id');
+      if (workoutId) {
+        viewingExisting = true;
+        document.getElementById('pageTitle').textContent = 'Workout Details';
+        document.getElementById('builderSection').classList.add('hidden');
+        document.getElementById('saveWorkoutBtn').classList.add('hidden');
+        await loadExistingWorkout(workoutId);
+      } else {
+        await loadLibrary();
+      }
+    });
+
+    async function loadLibrary() {
+      const user = Session.getCurrentUser();
+      try {
+        const data = await API.exercises.library(user._id);
+        library = data.combined || [];
+        fillExerciseSelect(library);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function fillExerciseSelect(list) {
+      const select = document.getElementById('exerciseSelect');
+      select.innerHTML = list.map(ex => `
+        <option value="${ex.exercise_id}" data-name="${ex.name}" data-custom="${ex.is_custom}">
+          ${ex.name} ${ex.is_custom ? '(Custom)' : ''}
+        </option>
+      `).join('');
+    }
+
+    document.getElementById('addSetBtn').addEventListener('click', () => {
+      const select = document.getElementById('exerciseSelect');
+      if (!select.value) return;
+
+      const weight = parseInt(document.getElementById('weightInput').value, 10);
+      const reps = parseInt(document.getElementById('repsInput').value, 10);
+      if (!reps) {
+        alert('Enter reps to add a set.');
+        return;
+      }
+
+      const chosen = library.find(ex => ex.exercise_id === select.value);
+      if (!chosen) return;
+
+      const set = { weight: isNaN(weight) ? null : weight, reps };
+      let entry = currentExercises.find(e => e.exercise_id === chosen.exercise_id);
+      if (!entry) {
+        entry = {
+          exercise_id: chosen.exercise_id,
+          name: chosen.name,
+          is_custom: !!chosen.is_custom,
+          sets: []
+        };
+        currentExercises.push(entry);
+      }
+      entry.sets.push(set);
+
+      document.getElementById('weightInput').value = '';
+      document.getElementById('repsInput').value = '';
+      renderExerciseList();
+    });
+
+    function renderExerciseList() {
+      const container = document.getElementById('exerciseList');
+      if (!currentExercises.length) {
+        container.textContent = 'No sets added yet.';
+        return;
+      }
+
+      container.innerHTML = currentExercises.map(ex => `
+        <div class="border rounded px-3 py-2">
+          <p class="font-semibold">${ex.name} ${ex.is_custom ? '(Custom)' : ''}</p>
+          <div class="text-gray-700">${ex.sets.map((set, i) => `Set ${i + 1}: ${set.reps} reps${set.weight !== null ? ` @ ${set.weight} lbs` : ''}`).join('<br>')}</div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('saveWorkoutBtn').addEventListener('click', async () => {
+      const user = Session.getCurrentUser();
+      if (!currentExercises.length) {
+        alert('Add at least one set before saving.');
+        return;
+      }
+
+      const payload = {
+        user_id: user._id,
+        date: new Date(),
+        exercises: currentExercises
+      };
+
+      try {
+        await API.workouts.create(payload);
+        alert('Workout saved!');
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    async function loadExistingWorkout(id) {
+      try {
+        const workout = await API.workouts.get(id);
+        currentExercises = workout.exercises || [];
+        renderExerciseList();
+      } catch (err) {
+        alert('Could not load workout.');
+      }
+    }
+  </script>
+</body>
+</html>

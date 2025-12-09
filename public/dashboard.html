@@ -7,17 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-    <!-- Navbar will be inserted here by JavaScript -->
-
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+        <div class="bg-white rounded-lg shadow p-6">
             <h1 class="text-2xl font-bold mb-2">Welcome back, <span id="userName"></span>!</h1>
             <p class="text-gray-600">Ready for today's workout?</p>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-white rounded-lg shadow p-4">
                 <h3 class="text-gray-500 text-sm">Current Weight</h3>
                 <p class="text-2xl font-bold"><span id="userWeight">--</span> lbs</p>
@@ -36,29 +32,30 @@
             </div>
         </div>
 
-        <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
-                <div class="space-y-3">
-                    <button onclick="window.location.href='/workout.html'" 
-                            class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
-                        🏋️ Start New Workout
-                    </button>
-                    <button onclick="window.location.href='/exercises.html'" 
-                            class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
-                        ➕ Manage Exercises
-                    </button>
-                    <button onclick="window.location.href='/profile.html'" 
-                            class="w-full bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600">
-                        👤 Edit Profile
-                    </button>
-                </div>
+            <div class="bg-white rounded-lg shadow p-6 space-y-3">
+                <h2 class="text-xl font-semibold">Quick Actions</h2>
+                <button onclick="window.location.href='/workout.html'" 
+                        class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+                    Start New Workout
+                </button>
+                <button onclick="window.location.href='/exercises.html'" 
+                        class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
+                    Manage Exercises
+                </button>
+                <button onclick="window.location.href='/stats.html'" 
+                        class="w-full bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800">
+                    View Stats
+                </button>
             </div>
 
-            <!-- Recent Workouts -->
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold mb-4">Recent Workouts</h2>
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-xl font-semibold">Recent Workouts</h2>
+                    <button onclick="window.location.href='/history.html'" class="text-blue-500 hover:underline text-sm">
+                        See all
+                    </button>
+                </div>
                 <div id="recentWorkouts" class="space-y-2">
                     <p class="text-gray-500">No workouts yet. Start your first workout!</p>
                 </div>
@@ -69,33 +66,59 @@
     <script src="/js/session.js"></script>
     <script src="/js/api.js"></script>
     <script>
-        // Check if logged in
-        if (!Session.requireLogin()) {
-            // Will redirect if not logged in
-        } else {
-            // Render navbar
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Session.requireLogin()) return;
             renderNavbar();
-            
-            // Load dashboard data
             loadDashboard();
-        }
+        });
 
         async function loadDashboard() {
             const user = Session.getCurrentUser();
             
-            // Display user info
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userWeight').textContent = user.weight_lbs || '--';
             document.getElementById('userAge').textContent = user.age || '--';
             
-            // Load workout stats (when workouts are implemented)
             try {
-                // For now, just showing placeholder
-                // const workouts = await WorkoutAPI.getByUser(user._id);
-                // displayWorkoutStats(workouts);
+                const workouts = await API.workouts.listForUser(user._id);
+                updateWorkoutStats(workouts);
+                displayRecentWorkouts(workouts.slice(0, 5));
             } catch (error) {
                 console.error('Error loading workouts:', error);
             }
+        }
+
+        function updateWorkoutStats(workouts) {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+
+            document.getElementById('totalWorkouts').textContent = workouts.length;
+            document.getElementById('weekWorkouts').textContent = workouts.filter(w => {
+                return new Date(w.date) >= weekAgo;
+            }).length;
+        }
+
+        function displayRecentWorkouts(workouts) {
+            const container = document.getElementById('recentWorkouts');
+            if (!workouts.length) return;
+
+            container.innerHTML = workouts.map(workout => `
+                <div class="border-l-4 border-blue-500 pl-4 py-2">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="font-semibold">${new Date(workout.date).toLocaleDateString()}</p>
+                            <p class="text-sm text-gray-600">${(workout.exercises || []).length} exercises</p>
+                        </div>
+                        <button onclick="viewWorkout('${workout._id}')" class="text-blue-500 hover:underline">
+                            Open
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewWorkout(id) {
+            window.location.href = `/workout.html?id=${id}`;
         }
     </script>
 </body>

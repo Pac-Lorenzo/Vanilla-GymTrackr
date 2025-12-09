@@ -1,27 +1,22 @@
-// Dashboard functionality
 document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboard();
 });
 
 async function loadDashboard() {
     try {
-        // Load statistics
         const [workouts, exercises] = await Promise.all([
             WorkoutAPI.getAll(),
             ExerciseAPI.getAll()
         ]);
         
-        // Update stats
         document.getElementById('totalWorkouts').textContent = workouts.length;
         document.getElementById('totalExercises').textContent = exercises.length;
         
-        // Calculate this week's workouts
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
         const weekWorkouts = workouts.filter(w => new Date(w.date) >= weekAgo);
         document.getElementById('weekWorkouts').textContent = weekWorkouts.length;
         
-        // Display recent workouts
         displayRecentWorkouts(workouts.slice(0, 5));
         
     } catch (error) {

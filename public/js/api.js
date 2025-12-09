@@ -1,114 +1,62 @@
-// Base URL for API requests
-const BASE_URL = "/api";
+(function () {
+  const BASE_URL = "/api";
 
+  async function request(endpoint, method = "GET", data) {
+    const options = {
+      method,
+      headers: { "Content-Type": "application/json" },
+    };
+    if (data !== undefined) {
+      options.body = JSON.stringify(data);
+    }
 
+    const res = await fetch(BASE_URL + endpoint, options);
+    if (!res.ok) {
+      const message = await res.text();
+      throw new Error(message || `Request failed (${res.status})`);
+    }
+    return res.json();
+  }
 
-// Generic requrest function
-async function request(endpoint, method = "GET", data = null) {
-  const options = {
-    method,
-    headers: { "Content-Type": "application/json" },
+  const api = {
+    users: {
+      list: () => request("/users"),
+      create: (data) => request("/users", "POST", data),
+      get: (id) => request(`/users/${id}`),
+      update: (id, data) => request(`/users/${id}`, "PUT", data),
+      remove: (id) => request(`/users/${id}`, "DELETE"),
+    },
+    workouts: {
+      listForUser: (userId) => request(`/workouts/${userId}`),
+      create: (data) => request("/workouts", "POST", data),
+      get: (id) => request(`/workouts/byid/${id}`),
+      remove: (id) => request(`/workouts/byid/${id}`, "DELETE"),
+    },
+    exercises: {
+      listGlobal: () => request("/exercises"),
+      library: (userId) => request(`/exercises/library/${userId}`),
+      addGlobal: (data) => request("/exercises", "POST", data),
+      addCustom: (userId, data) =>
+        request(`/exercises/custom/${userId}`, "POST", data),
+      removeCustom: (userId, exerciseId) =>
+        request(`/exercises/custom/${userId}/${exerciseId}`, "DELETE"),
+      removeGlobal: (id) => request(`/exercises/${id}`, "DELETE"),
+    },
+    templates: {
+      library: (userId) => request(`/templates/library/${userId}`),
+      listGlobal: () => request("/templates/global"),
+      listUser: (userId) => request(`/templates/${userId}`),
+      get: (id) => request(`/templates/byid/${id}`),
+      create: (data) => request("/templates", "POST", data),
+      update: (id, data) => request(`/templates/${id}`, "PUT", data),
+      remove: (id) => request(`/templates/${id}`, "DELETE"),
+    },
+    prs: {
+      listForUser: (userId) => request(`/prs/${userId}`),
+      getForExercise: (userId, exerciseId) =>
+        request(`/prs/${userId}/${exerciseId}`),
+    },
   };
 
-  // If there's body data (POST/PUT), attach it
-  if (data !== null) {
-    options.body = JSON.stringify(data);
-  }
-
-  // Send the request
-  const response = await fetch(BASE_URL + endpoint, options);
-
-  // Handle non-200 errors
-  if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(errorMessage || "Request failed");
-  }
-
-  // Parse JSON response
-  return response.json();
-}
-
-
-
-// ================================================
-// Shortcut helper functions (GET, POST, PUT, DELETE)
-// These mimic axios.get/post/put/delete()
-// ================================================
-const GET = (url) => request(url, "GET");
-const POST = (url, data) => request(url, "POST", data);
-const PUT = (url, data) => request(url, "PUT", data);
-const DELETE = (url) => request(url, "DELETE");
-
-
-
-// ================================
-// USERS
-// ================================
-export const getAllUsers = () => GET("/users");
-export const createUser = (data) => POST("/users", data);
-export const getUser = (id) => GET(`/users/${id}`);
-export const deleteUser = (id) => DELETE(`/users/${id}`);
-
-
-
-// ================================
-// WORKOUTS
-// ================================
-export const createWorkout = (data) => POST("/workouts", data);
-export const getWorkouts = (userId) => GET(`/workouts/${userId}`);
-export const deleteWorkout = (id) => DELETE(`/workouts/byid/${id}`);
-
-
-
-// ================================
-// PRs
-// ================================
-export const getPRs = (userId) => GET(`/prs/${userId}`);
-
-
-
-// ================================
-// EXERCISES
-// ================================
-export const getExercises = () => GET("/exercises");
-
-export const getExerciseLibrary = (userId) =>
-  GET(`/exercises/library/${userId}`);
-
-export const addGlobalExercise = (data) =>
-  POST("/exercises", data);
-
-export const addUserCustomExercise = (userId, data) =>
-  POST(`/exercises/custom/${userId}`, data);
-
-export const deleteUserCustomExercise = (userId, exerciseId) =>
-  DELETE(`/exercises/custom/${userId}/${exerciseId}`);
-
-export const deleteGlobalExercise = (id) =>
-  DELETE(`/exercises/${id}`);
-
-
-
-// ================================
-// TEMPLATES
-// ================================
-export const getTemplateLibrary = (userId) =>
-  GET(`/templates/library/${userId}`);
-
-export const getGlobalTemplates = () =>
-  GET("/templates/global");
-
-export const getUserTemplates = (userId) =>
-  GET(`/templates/${userId}`);
-
-export const getTemplate = (id) =>
-  GET(`/templates/byid/${id}`);
-
-export const createTemplate = (data) =>
-  POST("/templates", data);
-
-export const deleteTemplate = (id) =>
-  DELETE(`/templates/${id}`);
-
-export const updateTemplate = (id, data) =>
-  PUT(`/templates/${id}`, data);
+  window.API = api;
+})();
