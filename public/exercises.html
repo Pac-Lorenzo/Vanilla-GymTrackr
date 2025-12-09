@@ -22,7 +22,6 @@
     <section class="bg-white shadow rounded p-4">
       <div class="flex justify-between items-center mb-2">
         <h2 class="text-lg font-semibold">Exercises</h2>
-        <button id="refreshExercises" class="text-blue-500 text-sm hover:underline">Refresh</button>
       </div>
       <div id="globalList" class="space-y-1 text-sm text-gray-700">Loading...</div>
     </section>
@@ -36,8 +35,6 @@
       renderNavbar();
       loadExercises();
     });
-
-    document.getElementById('refreshExercises').addEventListener('click', loadExercises);
 
     async function loadExercises() {
       try {

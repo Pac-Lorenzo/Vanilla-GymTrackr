@@ -10,7 +10,6 @@
   <main class="max-w-5xl mx-auto px-4 py-8 space-y-4">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">Workout History</h1>
-      <button id="refreshBtn" class="text-blue-500 hover:underline text-sm">Refresh</button>
     </div>
     <section class="bg-white rounded shadow p-4">
       <div id="workoutList" class="space-y-2 text-sm text-gray-800">Loading...</div>
@@ -25,8 +24,6 @@
       renderNavbar();
       loadWorkouts();
     });
-
-    document.getElementById('refreshBtn').addEventListener('click', loadWorkouts);
 
     async function loadWorkouts() {
       const user = Session.getCurrentUser();
