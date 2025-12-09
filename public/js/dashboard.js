@@ -43,7 +43,7 @@ function displayRecentWorkouts(workouts) {
                 </div>
                 <button onclick="viewWorkout('${workout._id}')" 
                         class="text-blue-500 hover:text-blue-700">
-                    View →
+                    View
                 </button>
             </div>
         </div>
