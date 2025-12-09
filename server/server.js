@@ -8,7 +8,6 @@ const port = config.port
 
 const userService = require('./services/user-service');
 const exerciseService = require('./services/exercise-service');
-const templateService = require('./services/template-service');
 const workoutService = require('./services/workout-service');
 const prService = require('./services/pr-service');
 
@@ -115,60 +114,11 @@ app.get('/api/exercises', async (req, res, next) => {
   }
 });
 
-// GET combined library (global + custom for user)
-app.get('/api/exercises/library/:userId', async (req, res, next) => {
-  try {
-    const library = await exerciseService.getExerciseLibrary(req.params.userId);
-    res.json(library);
-  } catch (err) {
-    next(err);
-  }
-});
-
 // POST create global exercise
 app.post('/api/exercises', async (req, res, next) => {
   try {
     const exercise = await exerciseService.createGlobalExercise(req.body);
     res.status(201).json(exercise);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// POST add custom exercise for a user
-app.post('/api/exercises/custom/:userId', async (req, res, next) => {
-  try {
-    const result = await exerciseService.addCustomExercise(req.params.userId, req.body);
-    res.status(201).json(result);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// PUT update custom exercise
-app.put('/api/exercises/custom/:userId/:exerciseId', async (req, res, next) => {
-  try {
-    const exercise = await exerciseService.updateCustomExercise(
-      req.params.userId,
-      req.params.exerciseId,
-      req.body
-    );
-    if (!exercise) return res.status(404).json({ error: 'Custom exercise not found' });
-    res.json({ message: 'Custom exercise updated', exercise });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// DELETE custom exercise
-app.delete('/api/exercises/custom/:userId/:exerciseId', async (req, res, next) => {
-  try {
-    const ok = await exerciseService.deleteCustomExercise(
-      req.params.userId,
-      req.params.exerciseId
-    );
-    if (!ok) return res.status(404).json({ error: 'Custom exercise not found' });
-    res.json({ message: 'Exercise removed from your library' });
   } catch (err) {
     next(err);
   }
@@ -185,84 +135,6 @@ app.delete('/api/exercises/:id', async (req, res, next) => {
   }
 });
 
-
-// Template Routes
-// GET global templates
-app.get('/api/templates/global', async (req, res, next) => {
-  try {
-    const templates = await templateService.getGlobalTemplates();
-    res.json(templates);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET combined template library (global + user)
-app.get('/api/templates/library/:userId', async (req, res, next) => {
-  try {
-    const library = await templateService.getTemplateLibrary(req.params.userId);
-    res.json(library);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// POST create template (global or user)
-app.post('/api/templates', async (req, res, next) => {
-  try {
-    const template = await templateService.createTemplate(req.body);
-    res.status(201).json(template);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET single template
-app.get('/api/templates/byid/:id', async (req, res, next) => {
-  try {
-    const template = await templateService.getTemplateById(req.params.id);
-    if (!template) return res.status(404).json({ error: 'Template not found' });
-    res.json(template);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET user templates
-app.get('/api/templates/:userId', async (req, res, next) => {
-  try {
-    const templates = await templateService.getUserTemplates(req.params.userId);
-    res.json(templates);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// PUT update user template
-app.put('/api/templates/custom/:userId/:templateId', async (req, res, next) => {
-  try {
-    const template = await templateService.updateUserTemplate(
-      req.params.userId,
-      req.params.templateId,
-      req.body
-    );
-    if (!template) return res.status(404).json({ error: 'Template not found' });
-    res.json(template);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// DELETE template
-app.delete('/api/templates/:id', async (req, res, next) => {
-  try {
-    const template = await templateService.deleteTemplate(req.params.id);
-    if (!template) return res.status(404).json({ error: 'Template not found' });
-    res.json({ message: 'Template deleted successfully', template });
-  } catch (err) {
-    next(err);
-  }
-});
 
 // Workout Routes
 // POST create workout + update PRs

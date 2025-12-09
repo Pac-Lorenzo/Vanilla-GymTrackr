@@ -52,10 +52,9 @@
     });
 
     async function loadLibrary() {
-      const user = Session.getCurrentUser();
       try {
-        const data = await API.exercises.library(user._id);
-        library = data.combined || [];
+        const data = await API.exercises.listGlobal();
+        library = data || [];
         fillExerciseSelect(library);
       } catch (err) {
         console.error(err);
@@ -65,8 +64,8 @@
     function fillExerciseSelect(list) {
       const select = document.getElementById('exerciseSelect');
       select.innerHTML = list.map(ex => `
-        <option value="${ex.exercise_id}" data-name="${ex.name}" data-custom="${ex.is_custom}">
-          ${ex.name} ${ex.is_custom ? '(Custom)' : ''}
+        <option value="${ex.exercise_id}" data-name="${ex.name}">
+          ${ex.name}
         </option>
       `).join('');
     }
@@ -91,7 +90,6 @@
         entry = {
           exercise_id: chosen.exercise_id,
           name: chosen.name,
-          is_custom: !!chosen.is_custom,
           sets: []
         };
         currentExercises.push(entry);
@@ -112,7 +110,7 @@
 
       container.innerHTML = currentExercises.map(ex => `
         <div class="border rounded px-3 py-2">
-          <p class="font-semibold">${ex.name} ${ex.is_custom ? '(Custom)' : ''}</p>
+          <p class="font-semibold">${ex.name}</p>
           <div class="text-gray-700">${ex.sets.map((set, i) => `Set ${i + 1}: ${set.reps} reps${set.weight !== null ? ` @ ${set.weight} lbs` : ''}`).join('<br>')}</div>
         </div>
       `).join('');

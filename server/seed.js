@@ -3,7 +3,6 @@ const config = require('./config');
 
 const User = require('./models/User');
 const Exercise = require('./models/Exercise');
-const Template = require('./models/Template');
 const Workout = require('./models/Workout');
 const PR = require('./models/PersonalRecord');
 
@@ -16,7 +15,6 @@ async function seed() {
 
     await Exercise.deleteMany({});
     await User.deleteMany({});
-    await Template.deleteMany({});
     await Workout.deleteMany({});
     await PR.deleteMany({});
 
@@ -84,23 +82,6 @@ async function seed() {
       weight_lbs: 170
     });
 
-    await Template.create({
-      user_id: user._id,
-      name: 'Push Day',
-      is_global: false,
-      exercises: [{ exercise_id: bench.exercise_id, order: 1 }]
-    });
-
-    await Template.create({
-      user_id: null,
-      name: 'Full Body Workout',
-      is_global: true,
-      exercises: [
-        { exercise_id: bench.exercise_id, order: 1 },
-        { exercise_id: squat.exercise_id, order: 2 }
-      ]
-    });
-
     const workout = await Workout.create({
       user_id: user._id,
       date: new Date('2025-11-15'),
@@ -109,7 +90,6 @@ async function seed() {
         {
           exercise_id: bench.exercise_id,
           name: bench.name,
-          is_custom: false,
           sets: [
             { set_id: 's1', weight: 135, reps: 8, difficulty: 6 },
             { set_id: 's2', weight: 185, reps: 5, difficulty: 8 }

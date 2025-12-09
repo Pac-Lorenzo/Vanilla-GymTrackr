@@ -34,22 +34,8 @@
     },
     exercises: {
       listGlobal: () => request("/exercises"),
-      library: (userId) => request(`/exercises/library/${userId}`),
       addGlobal: (data) => request("/exercises", "POST", data),
-      addCustom: (userId, data) =>
-        request(`/exercises/custom/${userId}`, "POST", data),
-      removeCustom: (userId, exerciseId) =>
-        request(`/exercises/custom/${userId}/${exerciseId}`, "DELETE"),
       removeGlobal: (id) => request(`/exercises/${id}`, "DELETE"),
-    },
-    templates: {
-      library: (userId) => request(`/templates/library/${userId}`),
-      listGlobal: () => request("/templates/global"),
-      listUser: (userId) => request(`/templates/${userId}`),
-      get: (id) => request(`/templates/byid/${id}`),
-      create: (data) => request("/templates", "POST", data),
-      update: (id, data) => request(`/templates/${id}`, "PUT", data),
-      remove: (id) => request(`/templates/${id}`, "DELETE"),
     },
     prs: {
       listForUser: (userId) => request(`/prs/${userId}`),

@@ -11,7 +11,7 @@
     <h1 class="text-2xl font-bold">Exercises</h1>
 
     <section class="bg-white shadow rounded p-4">
-      <h2 class="text-lg font-semibold mb-2">Add Custom Exercise</h2>
+      <h2 class="text-lg font-semibold mb-2">Add Exercise</h2>
       <form id="addExerciseForm" class="flex flex-col md:flex-row gap-2">
         <input id="exerciseName" required placeholder="Exercise name" class="border rounded px-3 py-2 flex-1">
         <input id="exerciseType" placeholder="Type (optional)" class="border rounded px-3 py-2 flex-1">
@@ -19,18 +19,12 @@
       </form>
     </section>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white shadow rounded p-4">
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-lg font-semibold">Global Exercises</h2>
-          <button id="refreshExercises" class="text-blue-500 text-sm hover:underline">Refresh</button>
-        </div>
-        <div id="globalList" class="space-y-1 text-sm text-gray-700">Loading...</div>
+    <section class="bg-white shadow rounded p-4">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-lg font-semibold">Exercises</h2>
+        <button id="refreshExercises" class="text-blue-500 text-sm hover:underline">Refresh</button>
       </div>
-      <div class="bg-white shadow rounded p-4">
-        <h2 class="text-lg font-semibold mb-2">My Custom Exercises</h2>
-        <div id="customList" class="space-y-1 text-sm text-gray-700">Loading...</div>
-      </div>
+      <div id="globalList" class="space-y-1 text-sm text-gray-700">Loading...</div>
     </section>
   </main>
 
@@ -46,11 +40,9 @@
     document.getElementById('refreshExercises').addEventListener('click', loadExercises);
 
     async function loadExercises() {
-      const user = Session.getCurrentUser();
       try {
-        const data = await API.exercises.library(user._id);
-        renderGlobal(data.global || []);
-        renderCustom(data.custom || []);
+        const data = await API.exercises.listGlobal();
+        renderGlobal(data || []);
       } catch (err) {
         console.error(err);
       }
@@ -65,46 +57,20 @@
       container.innerHTML = list.map(ex => `<div class="border rounded px-3 py-2">${ex.name} <span class="text-gray-500">(${ex.type || 'Strength'})</span></div>`).join('');
     }
 
-    function renderCustom(list) {
-      const container = document.getElementById('customList');
-      if (!list.length) {
-        container.textContent = 'No custom exercises yet.';
-        return;
-      }
-      container.innerHTML = list.map(ex => `
-        <div class="border rounded px-3 py-2 flex justify-between items-center">
-          <span>${ex.name} <span class="text-gray-500">(${ex.type || 'Custom'})</span></span>
-          <button class="text-red-500 text-sm" onclick="removeCustom('${ex.exercise_id}')">Remove</button>
-        </div>
-      `).join('');
-    }
-
     document.getElementById('addExerciseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const user = Session.getCurrentUser();
       const name = document.getElementById('exerciseName').value.trim();
       const type = document.getElementById('exerciseType').value.trim();
       if (!name) return;
 
       try {
-        await API.exercises.addCustom(user._id, { name, type });
+        await API.exercises.addGlobal({ name, type });
         e.target.reset();
         loadExercises();
       } catch (err) {
         alert(err.message);
       }
     });
-
-    async function removeCustom(exerciseId) {
-      const user = Session.getCurrentUser();
-      if (!confirm('Remove this exercise?')) return;
-      try {
-        await API.exercises.removeCustom(user._id, exerciseId);
-        loadExercises();
-      } catch (err) {
-        alert(err.message);
-      }
-    }
   </script>
 </body>
 </html>

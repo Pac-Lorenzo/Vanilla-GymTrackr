@@ -10,7 +10,6 @@ const SetSchema = new mongoose.Schema({
 const WorkoutExerciseSchema = new mongoose.Schema({
   exercise_id: String,
   name: String,
-  is_custom: { type: Boolean, default: false },
   sets: [SetSchema]
 }, { _id: false });
 
