@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workout</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-100">
   <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
@@ -28,7 +28,6 @@
   </main>
 
   <script src="/js/session.js"></script>
-  <script src="/js/api.js"></script>
   <script>
     let currentExercises = [];
     let library = [];
@@ -53,8 +52,9 @@
 
     async function loadLibrary() {
       try {
-        const data = await API.exercises.listGlobal();
-        library = data || [];
+        const res = await fetch('/api/exercises');
+        if (!res.ok) throw new Error('Could not load exercises');
+        library = await res.json();
         fillExerciseSelect(library);
       } catch (err) {
         console.error(err);
@@ -130,7 +130,15 @@
       };
 
       try {
-        await API.workouts.create(payload);
+        const res = await fetch('/api/workouts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || 'Save failed');
+        }
         alert('Workout saved!');
         window.location.href = '/dashboard.html';
       } catch (err) {
@@ -140,7 +148,9 @@
 
     async function loadExistingWorkout(id) {
       try {
-        const workout = await API.workouts.get(id);
+        const res = await fetch(`/api/workouts/byid/${id}`);
+        if (!res.ok) throw new Error('Could not load workout');
+        const workout = await res.json();
         currentExercises = workout.exercises || [];
         renderExerciseList();
       } catch (err) {

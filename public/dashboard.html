@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GymTracker - Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body class="bg-gray-100">
     <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
@@ -34,7 +34,6 @@
     </main>
 
     <script src="/js/session.js"></script>
-    <script src="/js/api.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         if (!Session.requireLogin()) return;
@@ -48,7 +47,9 @@
         document.getElementById("userName").textContent = user.name;
 
         try {
-          const workouts = await API.workouts.listForUser(user._id);
+          const res = await fetch(`/api/workouts/${user._id}`);
+          if (!res.ok) throw new Error("Failed to load workouts");
+          const workouts = await res.json();
           updateWorkoutStats(workouts);
           displayRecentWorkouts(workouts.slice(0, 5));
         } catch (error) {

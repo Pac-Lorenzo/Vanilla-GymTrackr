@@ -15,7 +15,6 @@ const app = express();
 app.use(cors()); 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json()) 
-// Serve static frontend from the project-level public folder
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const uri = `mongodb+srv://${config.database.user}:${config.database.password}@firstcluster.tcooogm.mongodb.net/${config.database.dbName}?retryWrites=true&w=majority&appName=FirstCluster`;
@@ -27,7 +26,6 @@ const clientOptions = {
 
 async function run() {
   try {
-    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
     await mongoose.connect(uri, clientOptions);
     await mongoose.connection.db.admin().command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -47,8 +45,6 @@ app.get('/', (req, res) => {
   res.send('GymTracker API running');
 });
 
-// User Routes
-// GET all users
 app.get('/api/users', async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
@@ -58,7 +54,6 @@ app.get('/api/users', async (req, res, next) => {
   }
 });
 
-// POST create user
 app.post('/api/users', async (req, res, next) => {
   try {
     const user = await userService.createUser(req.body);
@@ -68,7 +63,6 @@ app.post('/api/users', async (req, res, next) => {
   }
 });
 
-// GET single user
 app.get('/api/users/:id', async (req, res, next) => {
   try {
     const user = await userService.getUserById(req.params.id);
@@ -79,7 +73,6 @@ app.get('/api/users/:id', async (req, res, next) => {
   }
 });
 
-// PUT update user
 app.put('/api/users/:id', async (req, res, next) => {
   try {
     const user = await userService.updateUser(req.params.id, req.body);
@@ -90,7 +83,6 @@ app.put('/api/users/:id', async (req, res, next) => {
   }
 });
 
-// DELETE user
 app.delete('/api/users/:id', async (req, res, next) => {
   try {
     const user = await userService.deleteUser(req.params.id);
@@ -102,8 +94,6 @@ app.delete('/api/users/:id', async (req, res, next) => {
 });
 
 
-// Exercise Routes
-// GET global exercises
 app.get('/api/exercises', async (req, res, next) => {
   try {
     const exercises = await exerciseService.getGlobalExercises();
@@ -113,7 +103,6 @@ app.get('/api/exercises', async (req, res, next) => {
   }
 });
 
-// POST create global exercise
 app.post('/api/exercises', async (req, res, next) => {
   try {
     const exercise = await exerciseService.createGlobalExercise(req.body);
@@ -123,7 +112,6 @@ app.post('/api/exercises', async (req, res, next) => {
   }
 });
 
-// DELETE global exercise
 app.delete('/api/exercises/:id', async (req, res, next) => {
   try {
     const exercise = await exerciseService.deleteGlobalExercise(req.params.id);
@@ -135,8 +123,6 @@ app.delete('/api/exercises/:id', async (req, res, next) => {
 });
 
 
-// Workout Routes
-// POST create workout
 app.post('/api/workouts', async (req, res, next) => {
   try {
     const workout = await workoutService.createWorkout(req.body);
@@ -146,7 +132,6 @@ app.post('/api/workouts', async (req, res, next) => {
   }
 });
 
-// GET workouts for a user
 app.get('/api/workouts/:userId', async (req, res, next) => {
   try {
     const workouts = await workoutService.getWorkoutsForUser(req.params.userId);
@@ -156,7 +141,6 @@ app.get('/api/workouts/:userId', async (req, res, next) => {
   }
 });
 
-// GET single workout
 app.get('/api/workouts/byid/:id', async (req, res, next) => {
   try {
     const workout = await workoutService.getWorkoutById(req.params.id);
@@ -167,7 +151,6 @@ app.get('/api/workouts/byid/:id', async (req, res, next) => {
   }
 });
 
-// DELETE workout
 app.delete('/api/workouts/byid/:id', async (req, res, next) => {
   try {
     const workout = await workoutService.deleteWorkoutById(req.params.id);

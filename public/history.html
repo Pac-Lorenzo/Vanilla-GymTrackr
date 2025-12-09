@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workout History</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-100">
   <main class="max-w-5xl mx-auto px-4 py-8 space-y-4">
@@ -17,7 +17,6 @@
   </main>
 
   <script src="/js/session.js"></script>
-  <script src="/js/api.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (!Session.requireLogin()) return;
@@ -28,7 +27,9 @@
     async function loadWorkouts() {
       const user = Session.getCurrentUser();
       try {
-        const workouts = await API.workouts.listForUser(user._id);
+        const res = await fetch(`/api/workouts/${user._id}`);
+        if (!res.ok) throw new Error('Could not load workouts');
+        const workouts = await res.json();
         renderWorkoutList(workouts || []);
       } catch (err) {
         document.getElementById('workoutList').textContent = 'Could not load workouts.';
@@ -63,7 +64,8 @@
     async function deleteWorkout(id) {
       if (!confirm('Delete this workout?')) return;
       try {
-        await API.workouts.remove(id);
+        const res = await fetch(`/api/workouts/byid/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Delete failed');
         loadWorkouts();
       } catch (err) {
         alert(err.message);
