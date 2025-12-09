@@ -12,20 +12,6 @@ async function getUserById(id) {
   return await User.findById(id);
 }
 
-async function updateUser(id, fields) {
-  const allowed = ['name', 'email'];
-  const updateData = {};
-  for (const key of allowed) {
-    if (fields[key] !== undefined) {
-      updateData[key] = fields[key];
-    }
-  }
-  return await User.findByIdAndUpdate(id, updateData, {
-    new: true,
-    runValidators: true
-  });
-}
-
 async function deleteUser(id) {
   return await User.findByIdAndDelete(id);
 }
