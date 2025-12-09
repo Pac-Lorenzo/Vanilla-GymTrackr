@@ -1,82 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exercises</title>
-  <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body class="bg-gray-100">
-  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
-    <h1 class="text-2xl font-bold">Exercises</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exercises</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="bg-gray-100">
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <h1 class="text-2xl font-bold">Exercises</h1>
 
-    <section class="bg-white shadow rounded p-4">
-      <h2 class="text-lg font-semibold mb-2">Add Exercise</h2>
-      <form id="addExerciseForm" class="flex flex-col md:flex-row gap-2">
-        <input id="exerciseName" required placeholder="Exercise name" class="border rounded px-3 py-2 flex-1">
-        <input id="exerciseType" placeholder="Type (optional)" class="border rounded px-3 py-2 flex-1">
-        <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add</button>
-      </form>
-    </section>
+      <section class="bg-white shadow rounded p-4">
+        <h2 class="text-lg font-semibold mb-2">Add Exercise</h2>
+        <form id="addExerciseForm" class="flex flex-col md:flex-row gap-2">
+          <input
+            id="exerciseName"
+            required
+            placeholder="Exercise name"
+            class="border rounded px-3 py-2 flex-1"
+          />
+          <input
+            id="exerciseType"
+            placeholder="Type (optional)"
+            class="border rounded px-3 py-2 flex-1"
+          />
+          <button
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add
+          </button>
+        </form>
+      </section>
 
-    <section class="bg-white shadow rounded p-4">
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="text-lg font-semibold">Exercises</h2>
-      </div>
-      <div id="globalList" class="space-y-1 text-sm text-gray-700">Loading...</div>
-    </section>
-  </main>
+      <section class="bg-white shadow rounded p-4">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-lg font-semibold">Exercises</h2>
+        </div>
+        <div id="globalList" class="space-y-1 text-sm text-gray-700">
+          Loading...
+        </div>
+      </section>
+    </main>
 
-  <script src="/js/session.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!Session.requireLogin()) return;
-      renderNavbar();
-      loadExercises();
-    });
-
-    async function loadExercises() {
-      try {
-        const res = await fetch('/api/exercises');
-        if (!res.ok) throw new Error('Could not load exercises');
-        const data = await res.json();
-        renderGlobal(data || []);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function renderGlobal(list) {
-      const container = document.getElementById('globalList');
-      if (!list.length) {
-        container.textContent = 'No global exercises found.';
-        return;
-      }
-      container.innerHTML = list.map(ex => `<div class="border rounded px-3 py-2">${ex.name} <span class="text-gray-500">(${ex.type || 'Strength'})</span></div>`).join('');
-    }
-
-    document.getElementById('addExerciseForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('exerciseName').value.trim();
-      const type = document.getElementById('exerciseType').value.trim();
-      if (!name) return;
-
-      try {
-        const res = await fetch('/api/exercises', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, type })
-        });
-        if (!res.ok) {
-          const msg = await res.text();
-          throw new Error(msg || 'Add failed');
-        }
-        e.target.reset();
+    <script src="/js/session.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!Session.requireLogin()) return;
+        renderNavbar();
         loadExercises();
-      } catch (err) {
-        alert(err.message);
+      });
+
+      async function loadExercises() {
+        try {
+          const res = await fetch("/api/exercises");
+          if (!res.ok) throw new Error("Could not load exercises");
+          const data = await res.json();
+          renderGlobal(data || []);
+        } catch (err) {
+          console.error(err);
+        }
       }
-    });
-  </script>
-</body>
+
+      function renderGlobal(list) {
+        const container = document.getElementById("globalList");
+        if (!list.length) {
+          container.textContent = "No global exercises found.";
+          return;
+        }
+        container.innerHTML = list
+          .map(
+            (ex) =>
+              `<div class="border rounded px-3 py-2">${
+                ex.name
+              } <span class="text-gray-500">(${
+                ex.type || "Strength"
+              })</span></div>`
+          )
+          .join("");
+      }
+
+      document
+        .getElementById("addExerciseForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const name = document.getElementById("exerciseName").value.trim();
+          const type = document.getElementById("exerciseType").value.trim();
+          if (!name) return;
+
+          try {
+            const res = await fetch("/api/exercises", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name, type }),
+            });
+            if (!res.ok) {
+              const msg = await res.text();
+              throw new Error(msg || "Add failed");
+            }
+            e.target.reset();
+            loadExercises();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+    </script>
+  </body>
 </html>

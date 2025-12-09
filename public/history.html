@@ -1,76 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout History</title>
-  <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body class="bg-gray-100">
-  <main class="max-w-5xl mx-auto px-4 py-8 space-y-4">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold">Workout History</h1>
-    </div>
-    <section class="bg-white rounded shadow p-4">
-      <div id="workoutList" class="space-y-2 text-sm text-gray-800">Loading...</div>
-    </section>
-  </main>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workout History</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="bg-gray-100">
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-4">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Workout History</h1>
+      </div>
+      <section class="bg-white rounded shadow p-4">
+        <div id="workoutList" class="space-y-2 text-sm text-gray-800">
+          Loading...
+        </div>
+      </section>
+    </main>
 
-  <script src="/js/session.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!Session.requireLogin()) return;
-      renderNavbar();
-      loadWorkouts();
-    });
+    <script src="/js/session.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!Session.requireLogin()) return;
+        renderNavbar();
+        loadWorkouts();
+      });
 
-    async function loadWorkouts() {
-      const user = Session.getCurrentUser();
-      try {
-        const res = await fetch(`/api/workouts/${user._id}`);
-        if (!res.ok) throw new Error('Could not load workouts');
-        const workouts = await res.json();
-        renderWorkoutList(workouts || []);
-      } catch (err) {
-        document.getElementById('workoutList').textContent = 'Could not load workouts.';
-      }
-    }
-
-    function renderWorkoutList(list) {
-      const container = document.getElementById('workoutList');
-      if (!list.length) {
-        container.textContent = 'No workouts yet.';
-        return;
+      async function loadWorkouts() {
+        const user = Session.getCurrentUser();
+        try {
+          const res = await fetch(`/api/workouts/${user._id}`);
+          if (!res.ok) throw new Error("Could not load workouts");
+          const workouts = await res.json();
+          renderWorkoutList(workouts || []);
+        } catch (err) {
+          document.getElementById("workoutList").textContent =
+            "Could not load workouts.";
+        }
       }
 
-      container.innerHTML = list.map(w => `
+      function renderWorkoutList(list) {
+        const container = document.getElementById("workoutList");
+        if (!list.length) {
+          container.textContent = "No workouts yet.";
+          return;
+        }
+
+        container.innerHTML = list
+          .map(
+            (w) => `
         <div class="border rounded px-3 py-2 flex justify-between items-center">
           <div>
-            <p class="font-semibold">${new Date(w.date).toLocaleDateString()}</p>
+            <p class="font-semibold">${new Date(
+              w.date
+            ).toLocaleDateString()}</p>
             <p class="text-gray-600">${(w.exercises || []).length} exercises</p>
           </div>
           <div class="space-x-2">
-            <button class="text-blue-500 hover:underline" onclick="viewWorkout('${w._id}')">Open</button>
-            <button class="text-red-500 hover:underline" onclick="deleteWorkout('${w._id}')">Delete</button>
+            <button class="text-blue-500 hover:underline" onclick="viewWorkout('${
+              w._id
+            }')">Open</button>
+            <button class="text-red-500 hover:underline" onclick="deleteWorkout('${
+              w._id
+            }')">Delete</button>
           </div>
         </div>
-      `).join('');
-    }
-
-    function viewWorkout(id) {
-      window.location.href = `/workout.html?id=${id}`;
-    }
-
-    async function deleteWorkout(id) {
-      if (!confirm('Delete this workout?')) return;
-      try {
-        const res = await fetch(`/api/workouts/byid/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Delete failed');
-        loadWorkouts();
-      } catch (err) {
-        alert(err.message);
+      `
+          )
+          .join("");
       }
-    }
-  </script>
-</body>
+
+      function viewWorkout(id) {
+        window.location.href = `/workout.html?id=${id}`;
+      }
+
+      async function deleteWorkout(id) {
+        if (!confirm("Delete this workout?")) return;
+        try {
+          const res = await fetch(`/api/workouts/byid/${id}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) throw new Error("Delete failed");
+          loadWorkouts();
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+    </script>
+  </body>
 </html>
